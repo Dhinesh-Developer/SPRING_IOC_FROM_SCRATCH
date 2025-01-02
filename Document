@@ -1,0 +1,173 @@
+Life Cycle of a Bean in Spring
+
+1. Create a Container
+
+The first step in the life cycle of a Spring Bean is to create the Spring IoC container.
+
+The container is responsible for instantiating, configuring, and managing the lifecycle of beans.
+
+2. Bean Creation (Container Phase)
+
+The IoC container reads the XML configuration file to locate bean definitions.
+
+Beans are instantiated based on the configuration provided.
+
+3. Dependency Injection
+
+After the bean is created, its dependencies are injected.
+
+This can be done using:
+
+Constructor Injection
+
+Setter Injection
+
+4. Custom Instantiation Logic
+
+Any custom logic during bean instantiation (e.g., using factory methods) is executed at this stage.
+
+5. Bean Usage
+
+The fully initialized bean is now ready to be used by the application.
+
+6. Custom Init Method
+
+A custom initialization method, if specified in the XML configuration, is called after the bean is fully initialized.
+
+Example: <bean init-method="customInitMethod">.
+
+7. Custom Destroy Method
+
+When the application context is closed, the custom destroy method, if specified, is executed.
+
+Example: <bean destroy-method="customDestroyMethod">.
+
+Maven Dependencies
+
+To use Spring Core and Spring Context modules, add the following dependencies to your pom.xml:
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>5.3.12</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.3.12</version>
+    </dependency>
+</dependencies>
+
+Goal
+
+The goal is to create a bean using BeanFactory without annotations, solely relying on XML-based configuration. This implementation includes:
+
+Property injection
+
+Constructor injection
+
+Setter injection
+
+Steps to Explore Spring IoC
+
+1. XML Configuration File
+
+Define beans in an XML file:
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Bean with property injection -->
+    <bean id="propertyBean" class="com.example.MyBean">
+        <property name="propertyName" value="PropertyValue" />
+    </bean>
+
+    <!-- Bean with constructor injection -->
+    <bean id="constructorBean" class="com.example.MyBean">
+        <constructor-arg name="argName" value="ConstructorValue" />
+    </bean>
+
+    <!-- Bean with custom init and destroy methods -->
+    <bean id="lifecycleBean" class="com.example.MyBean" init-method="customInit" destroy-method="customDestroy">
+        <property name="propertyName" value="LifecycleValue" />
+    </bean>
+
+</beans>
+
+2. Java Classes
+
+Bean Class
+
+package com.example;
+
+public class MyBean {
+    private String propertyName;
+
+    // Constructor
+    public MyBean(String propertyName) {
+        this.propertyName = propertyName;
+    }
+
+    // Setter method
+    public void setPropertyName(String propertyName) {
+        this.propertyName = propertyName;
+    }
+
+    // Custom init method
+    public void customInit() {
+        System.out.println("Custom initialization logic executed.");
+    }
+
+    // Custom destroy method
+    public void customDestroy() {
+        System.out.println("Custom destroy logic executed.");
+    }
+
+    @Override
+    public String toString() {
+        return "MyBean [propertyName=" + propertyName + "]";
+    }
+}
+
+Main Class
+
+package com.example;
+
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class Main {
+    public static void main(String[] args) {
+        // Load the Spring context
+        BeanFactory factory = new ClassPathXmlApplicationContext("beans.xml");
+
+        // Retrieve and use the beans
+        MyBean propertyBean = (MyBean) factory.getBean("propertyBean");
+        System.out.println(propertyBean);
+
+        MyBean constructorBean = (MyBean) factory.getBean("constructorBean");
+        System.out.println(constructorBean);
+
+        MyBean lifecycleBean = (MyBean) factory.getBean("lifecycleBean");
+        System.out.println(lifecycleBean);
+
+        // Close the context to trigger the destroy method
+        ((ClassPathXmlApplicationContext) factory).close();
+    }
+}
+
+Summary
+
+IoC Container: Manages bean lifecycle from creation to destruction.
+
+Dependency Injection: Achieved through constructor or setter methods.
+
+Custom Methods: Provides hooks for initialization and destruction logic.
+
+BeanFactory: A fundamental interface for accessing Spring beans.
+
+XML Configuration: Enables clear and flexible bean definitions without annotations.
+
