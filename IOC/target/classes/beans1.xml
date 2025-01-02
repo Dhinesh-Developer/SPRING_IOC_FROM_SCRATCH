@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="gc" class="com.ioc2.classes.GoldCustomer">
+	<!-- Setter Injection using dependencies Type 1 -->
+	<property name="type" value="Gold Customer"></property>
+	</bean>
+	<bean id="pc" class="com.ioc2.classes.PlatinumCustomer">
+	<property name="type" value="Platinum Customer"></property></bean>
+
+</beans>
+

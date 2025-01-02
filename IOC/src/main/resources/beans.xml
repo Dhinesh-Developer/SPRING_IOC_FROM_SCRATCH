@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- bean definitions here definition for bean -->
+	<!-- when scope is defined as, bean factory create a same objects every 
+		time. -->
+	<bean id="javaT" class="com.ioc.classes.JavaTrainerImpl">
+		<constructor-arg name="name" value="kumar"></constructor-arg>
+		<constructor-arg name="message"
+			value="Pratice OOPS Concept"></constructor-arg>
+	</bean>
+	<bean id="sqlT" class="com.ioc.classes.SqlTrainerImpl">
+		<constructor-arg name="name" value="Dhinesh"></constructor-arg>
+		<constructor-arg name="message"
+			value="Pratice sql queries"></constructor-arg>
+	</bean>
+	<bean id="webT" class="com.ioc.classes.WebTrainerImpl">
+		<constructor-arg name="name" value="Dk"></constructor-arg>
+		<constructor-arg name="message"
+			value="Pratice web development"></constructor-arg>
+	</bean>
+	
+	<bean id="pt" class="com.ioc.classes.PraticeTime">
+		<property name="PraticeTiming" value="2 hours"></property>
+	</bean>
+	<!-- when scope is prototype , bean factory create a different different 
+		objects -->
+	<!-- <bean id="javaT" class="com.ioc.classes.JavaTrainerImpl" scope="prototype"></bean> -->
+</beans>
+
