@@ -1,51 +1,193 @@
-Life Cycle of a Bean in Spring
+# Spring IoC (Inversion of Control) with Annotations and Java Configuration
 
-1. Create a Container
+This document covers the Spring IoC container, exploring how to use annotations and Java-based configuration to manage beans and their lifecycle efficiently.
 
-The first step in the life cycle of a Spring Bean is to create the Spring IoC container.
+---
 
-The container is responsible for instantiating, configuring, and managing the lifecycle of beans.
+## What is Spring IoC?
+Spring IoC (Inversion of Control) is a core concept in the Spring Framework. It refers to the principle of delegating the control of object creation and dependency management to the Spring container.
 
-2. Bean Creation (Container Phase)
+### Key Components:
+| Component      | Description                                    |
+|----------------|------------------------------------------------|
+| IoC Container  | Manages the lifecycle of beans in Spring.      |
+| Bean           | An object managed by the Spring container.     |
+| Dependency Injection | The process of providing dependencies to beans. |
 
-The IoC container reads the XML configuration file to locate bean definitions.
+---
 
-Beans are instantiated based on the configuration provided.
+## Bean Lifecycle in Spring with Annotations and Java Configuration
 
-3. Dependency Injection
+### 1. Create a Spring IoC Container
+With Java-based configuration, you create the IoC container using `AnnotationConfigApplicationContext`.
 
-After the bean is created, its dependencies are injected.
+### 2. Bean Creation and Configuration
+In Spring, you can create and configure beans using:
+- Annotations (`@Component`, `@Bean`, `@Configuration`, etc.)
+- Java-based configuration
 
-This can be done using:
+### 3. Dependency Injection
+Inject dependencies using:
+- `@Autowired` (Field/Setter/Constructor Injection)
+- `@Qualifier` for specifying a particular bean
 
-Constructor Injection
+---
 
-Setter Injection
+## Steps to Implement IoC with Annotations and Java Configuration
 
-4. Custom Instantiation Logic
+### 1. Using Annotations
 
-Any custom logic during bean instantiation (e.g., using factory methods) is executed at this stage.
+#### Example:
+1. **Create a Bean Class**
 
-5. Bean Usage
+```java
+package com.example;
 
-The fully initialized bean is now ready to be used by the application.
+import org.springframework.stereotype.Component;
 
-6. Custom Init Method
+@Component
+public class MyBean {
+    private String propertyName = "Annotation Bean";
 
-A custom initialization method, if specified in the XML configuration, is called after the bean is fully initialized.
+    public void customInit() {
+        System.out.println("Custom initialization logic executed.");
+    }
 
-Example: <bean init-method="customInitMethod">.
+    public void customDestroy() {
+        System.out.println("Custom destroy logic executed.");
+    }
 
-7. Custom Destroy Method
+    @Override
+    public String toString() {
+        return "MyBean [propertyName=" + propertyName + "]";
+    }
+}
+```
 
-When the application context is closed, the custom destroy method, if specified, is executed.
+2. **Create a Main Class**
 
-Example: <bean destroy-method="customDestroyMethod">.
+```java
+package com.example;
 
-Maven Dependencies
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-To use Spring Core and Spring Context modules, add the following dependencies to your pom.xml:
+public class Main {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
+        MyBean myBean = context.getBean(MyBean.class);
+        System.out.println(myBean);
+
+        context.close();
+    }
+}
+```
+
+3. **Create a Configuration Class**
+
+```java
+package com.example;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ComponentScan("com.example")
+public class AppConfig {
+}
+```
+
+---
+
+### 2. Using Java Configuration
+Instead of using XML, you can define beans programmatically.
+
+#### Example:
+
+1. **Create a Bean Class**
+
+```java
+package com.example;
+
+public class MyJavaBean {
+    private String message;
+
+    public MyJavaBean(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "MyJavaBean [message=" + message + "]";
+    }
+}
+```
+
+2. **Create a Configuration Class**
+
+```java
+package com.example;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public MyJavaBean myJavaBean() {
+        return new MyJavaBean("Java Configuration Bean");
+    }
+}
+```
+
+3. **Main Class**
+
+```java
+package com.example;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class Main {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+        MyJavaBean myJavaBean = context.getBean(MyJavaBean.class);
+        System.out.println(myJavaBean);
+
+        context.close();
+    }
+}
+```
+
+---
+
+## Annotations in Spring IoC
+
+| Annotation      | Description                                      |
+|-----------------|--------------------------------------------------|
+| `@Component`    | Marks a class as a Spring-managed bean.          |
+| `@Bean`         | Declares a bean in Java configuration.           |
+| `@Configuration`| Indicates that a class contains bean definitions.|
+| `@Autowired`    | Injects dependencies automatically.              |
+| `@Qualifier`    | Specifies the exact bean to inject.              |
+
+---
+
+## Summary
+| Concept              | XML Configuration    | Annotation-Based Configuration |
+|----------------------|----------------------|--------------------------------|
+| Bean Definition       | `<bean>` tag         | `@Component`, `@Bean`          |
+| Dependency Injection  | `<property>`, `<constructor-arg>` | `@Autowired`, `@Qualifier` |
+| Lifecycle Methods     | `init-method`, `destroy-method` | `@PostConstruct`, `@PreDestroy` |
+| Container Type        | `ClassPathXmlApplicationContext` | `AnnotationConfigApplicationContext` |
+
+---
+
+### Maven Dependencies
+Add the following dependencies to your `pom.xml` file to use Spring Core and Spring Context modules.
+
+```xml
 <dependencies>
     <dependency>
         <groupId>org.springframework</groupId>
@@ -58,116 +200,10 @@ To use Spring Core and Spring Context modules, add the following dependencies to
         <version>5.3.12</version>
     </dependency>
 </dependencies>
+```
 
-Goal
+---
 
-The goal is to create a bean using BeanFactory without annotations, solely relying on XML-based configuration. This implementation includes:
-
-Property injection
-
-Constructor injection
-
-Setter injection
-
-Steps to Explore Spring IoC
-
-1. XML Configuration File
-
-Define beans in an XML file:
-
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-    <!-- Bean with property injection -->
-    <bean id="propertyBean" class="com.example.MyBean">
-        <property name="propertyName" value="PropertyValue" />
-    </bean>
-
-    <!-- Bean with constructor injection -->
-    <bean id="constructorBean" class="com.example.MyBean">
-        <constructor-arg name="argName" value="ConstructorValue" />
-    </bean>
-
-    <!-- Bean with custom init and destroy methods -->
-    <bean id="lifecycleBean" class="com.example.MyBean" init-method="customInit" destroy-method="customDestroy">
-        <property name="propertyName" value="LifecycleValue" />
-    </bean>
-
-</beans>
-
-2. Java Classes
-
-Bean Class
-
-package com.example;
-
-public class MyBean {
-    private String propertyName;
-
-    // Constructor
-    public MyBean(String propertyName) {
-        this.propertyName = propertyName;
-    }
-
-    // Setter method
-    public void setPropertyName(String propertyName) {
-        this.propertyName = propertyName;
-    }
-
-    // Custom init method
-    public void customInit() {
-        System.out.println("Custom initialization logic executed.");
-    }
-
-    // Custom destroy method
-    public void customDestroy() {
-        System.out.println("Custom destroy logic executed.");
-    }
-
-    @Override
-    public String toString() {
-        return "MyBean [propertyName=" + propertyName + "]";
-    }
-}
-
-Main Class
-
-package com.example;
-
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-public class Main {
-    public static void main(String[] args) {
-        // Load the Spring context
-        BeanFactory factory = new ClassPathXmlApplicationContext("beans.xml");
-
-        // Retrieve and use the beans
-        MyBean propertyBean = (MyBean) factory.getBean("propertyBean");
-        System.out.println(propertyBean);
-
-        MyBean constructorBean = (MyBean) factory.getBean("constructorBean");
-        System.out.println(constructorBean);
-
-        MyBean lifecycleBean = (MyBean) factory.getBean("lifecycleBean");
-        System.out.println(lifecycleBean);
-
-        // Close the context to trigger the destroy method
-        ((ClassPathXmlApplicationContext) factory).close();
-    }
-}
-
-Summary
-
-IoC Container: Manages bean lifecycle from creation to destruction.
-
-Dependency Injection: Achieved through constructor or setter methods.
-
-Custom Methods: Provides hooks for initialization and destruction logic.
-
-BeanFactory: A fundamental interface for accessing Spring beans.
-
-XML Configuration: Enables clear and flexible bean definitions without annotations.
+## Conclusion
+Spring IoC offers flexibility in managing object creation and dependency injection using XML, annotations, and Java-based configurations. Understanding these methods helps in creating robust, scalable, and maintainable Spring applications.
 
